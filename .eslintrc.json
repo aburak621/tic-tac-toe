@@ -23,6 +23,8 @@
             "error",
             "single"
         ],
-        "no-param-reassign": "off"
+        "no-param-reassign": "off",
+        "no-plusplus": "off",
+        "prefer-destructuring":"off"
     }
 }
