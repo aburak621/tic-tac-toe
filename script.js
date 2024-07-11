@@ -93,6 +93,10 @@ const GameController = ((playerOneName = "Player One", playerTwoName = "Player T
       console.log(`${getActivePlayer().name} won!`);
       newGame();
       return;
+    } else if (checkForTie()) {
+      console.log("It is a tie!");
+      newGame();
+      return;
     }
 
     switchTurn();
@@ -125,6 +129,12 @@ const GameController = ((playerOneName = "Player One", playerTwoName = "Player T
       }
     }
     return false;
+  };
+
+  const checkForTie = () => {
+    return Gameboard.getBoard().every((row) => {
+      return !row.some(cell => cell.getSymbol() === '');
+    });
   };
 
   printNewRound();
