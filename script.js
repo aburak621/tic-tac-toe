@@ -62,6 +62,43 @@ function createCell() {
 }
 
 const GameController = ((playerOneName = "Player One", playerTwoName = "Player Two") => {
+  let currentPlayerIndex = 0;
+  let players = [Player(playerOneName, 'X'), Player(playerTwoName, 'O')]
+
+  const switchTurn = () => {
+    currentPlayerIndex = (currentPlayerIndex + 1) % 2;
+  };
+
+  const getActivePlayer = () => {
+    return players[currentPlayerIndex];
+  };
+
+  const printNewRound = () => {
+    Gameboard.printBoard();
+    console.log(`${getActivePlayer().name}'s turn.`);
+  };
+
+  const newGame = () => {
+    currentPlayerIndex = 0;
+    Gameboard.resetBoard();
+    printNewRound();
+  };
+
+  const playRound = (row, column) => {
+    if (!Gameboard.putSymbol(row, column, getActivePlayer().symbol)) {
+      return;
+    }
+
+    if (checkForWin()) {
+      console.log(`${getActivePlayer().name} won!`);
+      newGame();
+      return;
+    }
+
+    switchTurn();
+    printNewRound();
+  };
+
   const winningCombinations = [
     [[0, 0], [0, 1], [0, 2]], // Top row
     [[1, 0], [1, 1], [1, 2]], // Middle row
@@ -88,41 +125,6 @@ const GameController = ((playerOneName = "Player One", playerTwoName = "Player T
       }
     }
     return false;
-  };
-
-  let currentPlayerIndex = 0;
-  let players = [Player(playerOneName, 'X'), Player(playerTwoName, 'O')]
-
-  const switchTurn = () => {
-    currentPlayerIndex = (currentPlayerIndex + 1) % 2;
-  };
-
-  const getActivePlayer = () => {
-    return players[currentPlayerIndex];
-  };
-
-  const printNewRound = () => {
-    Gameboard.printBoard();
-    console.log(`${getActivePlayer().name}'s turn.`);
-  };
-
-  const newGame = () => {
-    currentPlayerIndex = 0;
-    Gameboard.resetBoard();
-  };
-
-  const playRound = (row, column) => {
-    if (!Gameboard.putSymbol(row, column, getActivePlayer().symbol)) {
-      return;
-    }
-
-    if (checkForWin()) {
-      console.log(`${getActivePlayer().name} won!`);
-      newGame();
-    }
-
-    switchTurn();
-    printNewRound();
   };
 
   printNewRound();
