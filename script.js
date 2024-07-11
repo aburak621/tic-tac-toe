@@ -90,10 +90,12 @@ const GameController = ((playerOneName = "Player One", playerTwoName = "Player T
     }
 
     if (checkForWin()) {
+      Gameboard.printBoard();
       console.log(`${getActivePlayer().name} won!`);
       newGame();
       return;
     } else if (checkForTie()) {
+      Gameboard.printBoard();
       console.log("It is a tie!");
       newGame();
       return;
