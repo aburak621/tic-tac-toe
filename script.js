@@ -1,23 +1,14 @@
+const boardElement = document.querySelector('.board');
+const cellList = [];
+
 const Gameboard = (() => {
-  const rows = 3;
-  const cols = 3;
-  let board = [];
-
-  const resetBoard = () => {
-    board = []
-    for (let i = 0; i < rows; i++) {
-      board[i] = [];
-      for (let j = 0; j < cols; j++) {
-        board[i].push(createCell());
-      }
-    }
-  };
-
-  resetBoard();
+  let rows = 3;
+  let cols = 3;
+  const board = [];
 
   const getBoard = () => {
     return board;
-  }
+  };
 
   const putSymbol = (row, col, symbol) => {
     if (board[row][col].getSymbol() !== '') {
@@ -35,9 +26,28 @@ const Gameboard = (() => {
       });
     });
     console.log(boardWithValues);
-  }
+  };
 
-  return { getBoard, resetBoard, putSymbol, printBoard };
+  const setupBoard = (rowCount, colCount, cellClickCallback) => {
+    rows = rowCount;
+    cols = colCount;
+
+    boardElement.innerHTML = '';
+    for (let i = 0; i < rows; i++) {
+      board[i] = [];
+      for (let j = 0; j < cols; j++) {
+        const cellElement = document.createElement('div');
+        cellElement.dataset.row = i.toString();
+        cellElement.dataset.col = j.toString();
+        cellElement.classList.add('cell');
+        cellElement.addEventListener('click', cellClickCallback);
+        boardElement.appendChild(cellElement);
+        board[i].push(createCell(cellElement));
+      }
+    }
+  };
+
+  return { getBoard, putSymbol, printBoard, setupBoard };
 })();
 
 const Player = (playerName, playerSymbol) => {
@@ -47,8 +57,9 @@ const Player = (playerName, playerSymbol) => {
   return { name, symbol };
 };
 
-function createCell() {
+function createCell(elem) {
   let symbol = '';
+  const element = elem;
 
   const setSymbol = (inValue) => {
     symbol = inValue;
@@ -58,12 +69,12 @@ function createCell() {
     return symbol;
   };
 
-  return { setSymbol, getSymbol };
+  return { setSymbol, getSymbol, element };
 }
 
-const GameController = ((playerOneName = "Player One", playerTwoName = "Player Two") => {
+const GameController = ((playerOneName = 'Player One', playerTwoName = 'Player Two') => {
   let currentPlayerIndex = 0;
-  let players = [Player(playerOneName, 'X'), Player(playerTwoName, 'O')]
+  const players = [Player(playerOneName, 'X'), Player(playerTwoName, 'O')];
 
   const switchTurn = () => {
     currentPlayerIndex = (currentPlayerIndex + 1) % 2;
@@ -78,9 +89,12 @@ const GameController = ((playerOneName = "Player One", playerTwoName = "Player T
     console.log(`${getActivePlayer().name}'s turn.`);
   };
 
-  const newGame = () => {
+  const newGame = (rows = 3, cols = 3) => {
     currentPlayerIndex = 0;
-    Gameboard.resetBoard();
+    Gameboard.setupBoard(rows, cols, (e) => {
+      e.target.innerText = getActivePlayer().symbol;
+      playRound(e.target.dataset.row, e.target.dataset.col);
+    });
     printNewRound();
   };
 
@@ -96,7 +110,7 @@ const GameController = ((playerOneName = "Player One", playerTwoName = "Player T
       return;
     } else if (checkForTie()) {
       Gameboard.printBoard();
-      console.log("It is a tie!");
+      console.log('It is a tie!');
       newGame();
       return;
     }
@@ -114,13 +128,13 @@ const GameController = ((playerOneName = "Player One", playerTwoName = "Player T
     [[0, 2], [1, 2], [2, 2]], // Right column
     [[0, 0], [1, 1], [2, 2]], // Top-left to bottom-right diagonal
     [[0, 2], [1, 1], [2, 0]], // Top-right to bottom-left diagonal
-  ]
+  ];
 
   const checkForWin = () => {
-    for (let combination of winningCombinations) {
+    for (const combination of winningCombinations) {
       const [a, b, c] = combination;
 
-      const board = Gameboard.getBoard()
+      const board = Gameboard.getBoard();
       const firstCell = board[a[0]][a[1]].getSymbol();
       if (firstCell === '') {
         continue;
@@ -139,7 +153,7 @@ const GameController = ((playerOneName = "Player One", playerTwoName = "Player T
     });
   };
 
-  printNewRound();
+  newGame();
 
   return { playRound, getActivePlayer, newGame };
 })();
