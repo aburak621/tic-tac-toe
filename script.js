@@ -92,8 +92,8 @@ const GameController = ((playerOneName = 'Player One', playerTwoName = 'Player T
   const newGame = (rows = 3, cols = 3) => {
     currentPlayerIndex = 0;
     Gameboard.setupBoard(rows, cols, (e) => {
-      e.target.innerText = getActivePlayer().symbol;
       playRound(e.target.dataset.row, e.target.dataset.col);
+      e.target.innerText = Gameboard.getBoard()[e.target.dataset.row][e.target.dataset.col].getSymbol();
     });
     printNewRound();
   };
